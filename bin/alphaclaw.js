@@ -5,6 +5,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { execSync } = require("child_process");
+const { buildSecretReplacements } = require("../lib/server/helpers");
 
 // ---------------------------------------------------------------------------
 // Parse CLI flags
@@ -502,19 +503,9 @@ if (fs.existsSync(configPath)) {
 
     if (changed) {
       let content = JSON.stringify(cfg, null, 2);
-      const replacements = [
-        [process.env.OPENCLAW_GATEWAY_TOKEN, "${OPENCLAW_GATEWAY_TOKEN}"],
-        [process.env.ANTHROPIC_API_KEY, "${ANTHROPIC_API_KEY}"],
-        [process.env.ANTHROPIC_TOKEN, "${ANTHROPIC_TOKEN}"],
-        [process.env.TELEGRAM_BOT_TOKEN, "${TELEGRAM_BOT_TOKEN}"],
-        [process.env.DISCORD_BOT_TOKEN, "${DISCORD_BOT_TOKEN}"],
-        [process.env.OPENAI_API_KEY, "${OPENAI_API_KEY}"],
-        [process.env.GEMINI_API_KEY, "${GEMINI_API_KEY}"],
-        [process.env.NOTION_API_KEY, "${NOTION_API_KEY}"],
-        [process.env.BRAVE_API_KEY, "${BRAVE_API_KEY}"],
-      ];
+      const replacements = buildSecretReplacements(process.env);
       for (const [secret, envRef] of replacements) {
-        if (secret && secret.length > 8) {
+        if (secret) {
           content = content.split(secret).join(envRef);
         }
       }
