@@ -7,5 +7,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --production
 COPY . .
 
+ENV PATH="/app/node_modules/.bin:$PATH"
+
 EXPOSE 3000
 CMD ["node", "bin/alphaclaw.js", "start"]
